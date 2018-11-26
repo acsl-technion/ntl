@@ -8,12 +8,25 @@
 #include "ntl/link.hpp"
 #include "axi_data.hpp"
 
+#include <net/ethernet.h>
+#include <netinet/in.h>
+
 typedef ntl::stream<axi_data> axi_data_stream;
 
 struct metadata {
     ap_uint<32> ip_source, ip_dest;
     ap_uint<16> ether_type, udp_source, udp_dest;
     ap_uint<8> ip_protocol;
+
+    bool valid_ip() const
+    {
+        return ether_type == ETHERTYPE_IP;
+    }
+
+    bool valid_udp() const
+    {
+        return valid_ip() && ip_protocol == IPPROTO_UDP;
+    }
 };
 
 typedef ntl::stream<metadata> metadata_stream;
