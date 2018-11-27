@@ -325,7 +325,7 @@ namespace ntl {
             gateway_command cmd = {
                 HASH_ERASE,
                 0,
-                make_tuple(tag, mapped_type())
+                std::make_tuple(tag, mapped_type())
             };
             gateway_response resp;
 

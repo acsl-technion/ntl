@@ -1,6 +1,7 @@
 #include "ntl/map.hpp"
 #include "ntl/cache.hpp"
 #include "parser.hpp"
+#include "firewall.hpp"
 
 #include <functional>
 
@@ -65,12 +66,23 @@ std::size_t hash_value(hash_tag tag)
 
 typedef ntl::hash_table_wrapper<hash_tag, ap_uint<1>, 1024> hash_t;
 
-class firewall
+struct gateway_data
+{
+        hash_tag tag;
+        ap_uint<1> result;
+        int status;
+};
+
+typedef ntl::gateway_registers<gateway_data> gateway_registers;
+
+class firewall : public ntl::gateway_impl<firewall, gateway_data>
 {
 public:
-    void step(axi_data_stream& in, axi_data_stream& data_out, bool_stream& classify_out)
+    void step(axi_data_stream& in, axi_data_stream& data_out, bool_stream& classify_out, gateway_registers& g)
     {
 #pragma HLS inline
+        gateway(this, g);
+
         dup_data.step(in);
         parse.step(dup_data._streams[0]);
         dup_metadata.step(parse.out);
@@ -95,6 +107,18 @@ public:
         link(merge_hash_results.out, classify_out);
         link(dup_data._streams[1], data_out);
     }
+
+    int rpc(int addr, gateway_data& data)
+    {
+        switch (addr) {
+        case FIREWALL_ADD:
+            return hash.gateway_add_entry(std::make_tuple(data.tag, data.result), &data.status);
+        case FIREWALL_DEL:
+            return hash.gateway_delete_entry(data.tag, &data.status);
+        default:
+            return GW_FAIL;
+        }
+    }
 private:
     ntl::dup<axi_data, 2> dup_data;
     ntl::dup<metadata, 2> dup_metadata;
@@ -105,9 +129,10 @@ private:
     ntl::zip_with<ap_uint<1>, ap_uint<1>, ap_uint<1> > merge_hash_results;
 };
 
-void firewall_top(axi_data_stream& in, axi_data_stream& data_out, bool_stream& classify_out)
+void firewall_top(axi_data_stream& in, axi_data_stream& data_out, bool_stream& classify_out, gateway_registers& g)
 {
 #pragma HLS dataflow
+    GATEWAY_OFFSET(g, 0x100, 0x118, 0xfc)
     static firewall f;
-    f.step(in, data_out, classify_out);
+    f.step(in, data_out, classify_out, g);
 }

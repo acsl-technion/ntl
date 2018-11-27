@@ -27,16 +27,10 @@
 
 #include "macros.hpp"
 
-// #include "ikernel-types.hpp"
-
 #define GATEWAY_OFFSET(gateway, offset_cmd, offset_data, offset_done) \
     DO_PRAGMA_SYN(HLS interface s_axilite port=gateway.cmd offset=offset_cmd) \
     DO_PRAGMA_SYN(HLS interface s_axilite port=gateway.data offset=offset_data) \
     DO_PRAGMA_SYN(HLS interface s_axilite port=gateway.done offset=offset_done)
-
-#define VIRT_GATEWAY_OFFSET(gateway, offset_cmd, offset_data, offset_done, offset_ikernel_id) \
-    GATEWAY_OFFSET(gateway.common, offset_cmd, offset_data, offset_done) \
-    DO_PRAGMA_SYN(HLS interface s_axilite port=gateway.ikernel_id offset=offset_ikernel_id)
 
 enum {
     GW_FAIL = (-1),
@@ -66,7 +60,7 @@ namespace ntl {
 #pragma HLS pipeline enable_flush ii=1
         DO_PRAGMA_SYN(HLS data_pack variable=r.cmd)
             if (r.cmd.go && !instance->axilite_gateway_done) {
-                int res = instance->rpc(r.cmd.addr, &r.data);
+                int res = instance->rpc(r.cmd.addr, r.data);
                 if (res != GW_BUSY) {
                     instance->axilite_gateway_done = true;
                     r.done = 1;
@@ -75,7 +69,6 @@ namespace ntl {
                 instance->axilite_gateway_done = false;
                 r.done = 0;
             }
-            instance->gateway_update();
         }
 
     private:
