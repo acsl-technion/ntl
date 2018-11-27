@@ -39,12 +39,14 @@ namespace ntl {
         template <typename Func>
         void step(Func&& f, stream<Args>&... in)
         {
-#pragma HLS inline region
+#pragma HLS pipeline
             if (out.full())
                 return;
 
-            auto empties = {in.empty()...};
-            for (auto empty : empties) {
+            bool empties[] = {in.empty()...};
+#pragma HLS array_partition variable=empties complete
+            check_empty: for (auto empty : empties) {
+#pragma HLS unroll
                 if (empty)
                     return;
             }
