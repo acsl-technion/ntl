@@ -49,7 +49,6 @@ namespace ntl {
             return _stream.full();
         }
 
-    private:
         hls::stream<T> _stream;
     };
 
@@ -60,7 +59,6 @@ namespace ntl {
         T read()
         {
 #pragma HLS inline
-#pragma HLS interface axis port=_stream
             return _stream.read();
         }
 
@@ -70,7 +68,6 @@ namespace ntl {
             return _stream.empty();
         }
 
-    private:
         hls::stream<T> _stream;
     };
 
@@ -82,7 +79,6 @@ namespace ntl {
         void write(const U& u)
         {
 #pragma HLS inline
-#pragma HLS interface axis port=_stream
             _stream.write(u);
         }
 
@@ -92,7 +88,6 @@ namespace ntl {
             return false;
         }
 
-    private:
         hls::stream<T> _stream;
     };
 

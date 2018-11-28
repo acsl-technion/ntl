@@ -135,6 +135,8 @@ void firewall_top(ntl::stream<raw_axi_data, ntl::axi_stream_input_tag>& in,
 {
 #pragma HLS dataflow
 #pragma HLS interface ap_ctrl_none port=return
+#pragma HLS interface axis port=in._stream
+#pragma HLS interface axis port=data_out._stream
 
     GATEWAY_OFFSET(g, 0x100, 0x118, 0xfc)
     static firewall f;
