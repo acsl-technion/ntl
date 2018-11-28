@@ -129,10 +129,18 @@ private:
     ntl::zip_with<ap_uint<1>, ap_uint<1>, ap_uint<1> > merge_hash_results;
 };
 
-void firewall_top(axi_data_stream& in, axi_data_stream& data_out, bool_stream& classify_out, gateway_registers& g)
+void firewall_top(ntl::stream<raw_axi_data, ntl::axi_stream_input_tag>& in,
+                  ntl::stream<raw_axi_data, ntl::axi_stream_output_tag>& data_out,
+                  bool_stream& classify_out, gateway_registers& g)
 {
 #pragma HLS dataflow
+#pragma HLS interface ap_ctrl_none port=return
+
     GATEWAY_OFFSET(g, 0x100, 0x118, 0xfc)
     static firewall f;
-    f.step(in, data_out, classify_out, g);
+    static axi_data_stream in_fifo, out_fifo;
+    ntl::link(in, in_fifo);
+#pragma HLS stream variable=out_fifo depth=16
+    ntl::link(out_fifo, data_out);
+    f.step(in_fifo, out_fifo, classify_out, g);
 }
