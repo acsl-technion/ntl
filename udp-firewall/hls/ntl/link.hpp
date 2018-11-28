@@ -8,9 +8,11 @@ namespace ntl {
     void link(InputStream& in, OutputStream& out)
     {
 #pragma HLS pipeline
+        typedef typename stream_element<OutputStream>::type out_element_type;
+
         if (in.empty() || out.full())
             return;
 
-        out.write(in.read());
+        out.write(out_element_type(in.read()));
     }
 }
