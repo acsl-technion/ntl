@@ -202,7 +202,7 @@ namespace ntl {
     {
     public:
         hash_table_wrapper() :
-            _hash_table(),
+            _table(),
             gateway_commands("gateway_commands"),
             gateway_responses("gateway_responses"),
             gateway_command_sent(false)
@@ -238,13 +238,13 @@ namespace ntl {
                 switch (cmd.cmd) {
                 case HASH_ERASE: {
                     auto tag = std::get<0>(cmd.value.value());
-                    bool result = _hash_table.erase(tag);
+                    bool result = _table.erase(tag);
                     std::get<1>(resp) = make_maybe(result, cmd.value.value());
                     break;
                 }
                 case HASH_INSERT: {
                     auto value = cmd.value.value();
-                    auto result = _hash_table.insert(std::get<0>(value), std::get<1>(value));
+                    auto result = _table.insert(std::get<0>(value), std::get<1>(value));
                     /* Return zero for failure, 1 + index otherwise */
                     std::get<0>(resp) = result ? result.value() + 1 : 0;
                     break;
@@ -253,13 +253,13 @@ namespace ntl {
                     const bool valid = cmd.value.valid();
                     const tag_type tag = std::get<0>(cmd.value.value());
                     const mapped_type value = std::get<1>(cmd.value.value());
-                    _hash_table.set_entry(cmd.index, valid, tag, value);
+                    _table.set_entry(cmd.index, valid, tag, value);
                     break;
                 }
                 case HASH_READ: {
-                    bool valid = _hash_table.get_valid(cmd.index);
-                    tag_type tag = _hash_table.get_tag(cmd.index);
-                    mapped_type value = _hash_table.get_value(cmd.index);
+                    bool valid = _table.get_valid(cmd.index);
+                    tag_type tag = _table.get_tag(cmd.index);
+                    mapped_type value = _table.get_value(cmd.index);
                     std::get<1>(resp) = make_maybe(valid, std::make_tuple(tag, value));
                     break;
                 }
@@ -271,7 +271,7 @@ namespace ntl {
             if (!lookups.empty()) {
                 tag_type tag = lookups.read();
                 size_t index;
-                auto result = _hash_table.find(tag, index);
+                auto result = _table.find(tag, index);
                 auto returned_results = make_maybe(result.valid(),
                     std::make_tuple(result.valid() ? uint32_t(index + 1) : 0, result.value()));
                 results.write(returned_results);
@@ -357,7 +357,7 @@ namespace ntl {
 
     private:
 
-        hash_table_t _hash_table;
+        hash_table_t _table;
 
         /* Gateway access definitions */
         pack_stream<gateway_command> gateway_commands;
