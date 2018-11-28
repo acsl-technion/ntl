@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2016-2017 Haggai Eran, Gabi Malka, Lior Zeno, Maroun Tork
+// Copyright (c) 2016-2018 Haggai Eran, Gabi Malka, Lior Zeno, Maroun Tork
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -26,7 +26,14 @@
 #pragma once
 
 #include <ap_int.h>
+#include <ap_axi_sdata.h>
 #include <boost/operators.hpp>
+
+struct raw_axi_data {
+    ap_uint<256> data;
+    ap_uint<32> keep;
+    ap_uint<1> last;
+};
 
 struct axi_data : public boost::equality_comparable<axi_data> {
     ap_uint<256> data;
@@ -36,6 +43,9 @@ struct axi_data : public boost::equality_comparable<axi_data> {
     axi_data() {}
     axi_data(const ap_uint<256>& data, const ap_uint<32>& keep, bool last) :
         data(data), keep(keep), last(last) {}
+    axi_data(const axi_data&) = default;
+    axi_data(const raw_axi_data& o) :
+        data(o.data), keep(o.keep), last(o.last) {}
 
     static ap_uint<32> keep_bytes(const ap_uint<6>& valid_bytes)
     {
@@ -76,8 +86,16 @@ struct axi_data : public boost::equality_comparable<axi_data> {
         last(d(0, 0))
     {}
 
-    operator ap_uint<width>() {
+    operator ap_uint<width>() const
+    {
+#pragma HLS inline
         return (data, keep, last);
+    }
+
+    operator raw_axi_data() const
+    {
+#pragma HLS inline
+        return raw_axi_data{data, keep, last};
     }
 };
 
