@@ -35,6 +35,8 @@
 #include "macros.hpp"
 #include "constexpr.hpp"
 
+#undef CACHE_ENABLE_DEBUG_COMMANDS
+
 namespace ntl {
     template <typename Tag, typename Value, unsigned Size, int max_hops = Size, bool insert_overrides = true>
     class cache
@@ -130,6 +132,7 @@ namespace ntl {
         }
 
         /* For debugging */
+#ifdef CACHE_ENABLE_DEBUG_COMMANDS
         bool set_entry(index_t index, bool set_valid, const Tag& tag, const Value& value) {
             bool result = !valid[index];
 
@@ -143,6 +146,7 @@ namespace ntl {
         const Tag& get_tag(index_t index) const { return tags[index % Size]; }
         const Value& get_value(index_t index) const { return values[index % Size]; }
         bool get_valid(index_t index) const { return valid[index % Size]; }
+#endif
 
     private:
         index_t h(const Tag& tag) const { return boost::hash<Tag>()(tag) % Size; }
@@ -249,6 +253,7 @@ namespace ntl {
                     std::get<0>(resp) = result ? result.value() + 1 : 0;
                     break;
                 }
+#ifdef CACHE_ENABLE_DEBUG_COMMANDS
                 case HASH_WRITE: {
                     const bool valid = cmd.value.valid();
                     const tag_type tag = std::get<0>(cmd.value.value());
@@ -263,6 +268,7 @@ namespace ntl {
                     std::get<1>(resp) = make_maybe(valid, std::make_tuple(tag, value));
                     break;
                 }
+#endif
                 }
                 gateway_responses.write(resp);
                 return;
