@@ -4,8 +4,8 @@
 
 namespace ntl {
 
-    template <typename T, typename U>
-    void link(stream<T>& in, stream<U>& out)
+    template <typename InputStream, typename OutputStream>
+    void link(InputStream& in, OutputStream& out)
     {
 #pragma HLS pipeline
         if (in.empty() || out.full())
