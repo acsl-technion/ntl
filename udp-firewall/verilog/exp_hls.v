@@ -324,6 +324,14 @@ assign sbu2nwp_axi4stream_tlast = cxp2sbu_axi4stream_tlast;
 assign sbu2nwp_axi4stream_tid = cxp2sbu_axi4stream_tid;
 assign sbu2nwp_axi4stream_tuser = cxp2sbu_axi4stream_tuser;
 
+assign mlx2sbu_axi4stream_rdy = sbu2mlx_axi4stream_rdy;
+assign sbu2mlx_axi4stream_vld = mlx2sbu_axi4stream_vld;
+assign sbu2mlx_axi4stream_tdata = mlx2sbu_axi4stream_tdata;
+assign sbu2mlx_axi4stream_tkeep = mlx2sbu_axi4stream_tkeep;
+assign sbu2mlx_axi4stream_tlast = mlx2sbu_axi4stream_tlast;
+assign sbu2mlx_axi4stream_tuser = mlx2sbu_axi4stream_tuser;
+assign sbu2mlx_axi4stream_tid = mlx2sbu_axi4stream_tid;
+
 exp_hls_watchdog exp_hls_watchdog(
    .clk(mlx2sbu_clk),
    .reset(mlx2sbu_reset),
