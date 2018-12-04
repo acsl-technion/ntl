@@ -47,6 +47,7 @@ cd ..
 
 ln -snf examples/exp_hls user/sources
 ln -snf ../../../sysvlog user/sources/
+ln -snf ../../../../p4/build/firewall/XilinxSwitch/XilinxSwitch_vivado/XilinxSwitch/XilinxSwitch.srcs/sources_1/imports/ user/sources/ip_repo
 
 ln -snf ../../../../xci user/examples/exp_hls/xci
 cd user/examples/exp_hls/vlog

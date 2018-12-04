@@ -177,6 +177,9 @@ wire           temp2;
   wire firewall_data_out_tvalid;
   wire firewall_data_out_tready;
   
+  wire nwp2sbu_axi4stream_strb = nwp2sbu_axi4stream_vld & nwp2sbu_axi4stream_rdy;
+
+`ifdef BUILD_HLS
   firewall_firewall_top #(
     .C_S_AXI_AXILITES_ADDR_WIDTH(32),
     .C_S_AXI_AXILITES_DATA_WIDTH(32)
@@ -228,6 +231,63 @@ wire           temp2;
         .s_axi_AXILiteS_RRESP(mlx2sbu_axi4lite_r_resp)
    );
 
+`else
+  XilinxSwitch firewall0(
+// nica wiring borrowed from example_hls instantiation within ku060_all_exp_hls_wrapper.v:
+	.clk_line_rst(mlx2sbu_reset),
+	.clk_line(mlx2sbu_clk),
+	.clk_lookup_rst(mlx2sbu_reset),
+	.clk_lookup(mlx2sbu_clk),
+	.clk_control_rst(mlx2sbu_reset),
+	.clk_control(mlx2sbu_clk),
+
+        .enable_processing(1'b1),
+
+        .packet_in_packet_in_TDATA(nwp2sbu_axi4stream_tdata),
+        .packet_in_packet_in_TVALID(nwp2sbu_axi4stream_vld),
+        .packet_in_packet_in_TREADY(nwp2sbu_axi4stream_rdy),
+        .packet_in_packet_in_TKEEP(nwp2sbu_axi4stream_tkeep),
+        .packet_in_packet_in_TLAST(nwp2sbu_axi4stream_tlast),
+
+        .tuple_in_ctrl_VALID(nwp2sbu_axi4stream_strb),
+        .tuple_in_ctrl_DATA(1'b1),
+
+        .packet_out_packet_out_TDATA(sbu2cxpfifo_axi4stream_tdata),
+        .packet_out_packet_out_TVALID(firewall_data_out_tvalid),
+        .packet_out_packet_out_TREADY(firewall_data_out_tready),
+        .packet_out_packet_out_TKEEP(sbu2cxpfifo_axi4stream_tkeep),
+        .packet_out_packet_out_TLAST(sbu2cxpfifo_axi4stream_tlast),
+
+        .tuple_out_ctrl_VALID(classify_out_stream_write),
+        .tuple_out_ctrl_DATA(classify_out_stream_din),
+
+        // axi lite
+        .control_flows_S_AXI_AWREADY(mlx2sbu_axi4lite_aw_rdy),
+        .control_flows_S_AXI_AWVALID(mlx2sbu_axi4lite_aw_vld),
+        .control_flows_S_AXI_AWADDR(mlx2sbu_axi4lite_aw_addr),
+        // .axi4lite_aw_prot(mlx2sbu_axi4lite_aw_prot),
+
+        .control_flows_S_AXI_WVALID(mlx2sbu_axi4lite_w_vld),
+        .control_flows_S_AXI_WREADY(mlx2sbu_axi4lite_w_rdy),
+        .control_flows_S_AXI_WDATA(mlx2sbu_axi4lite_w_data),
+        .control_flows_S_AXI_WSTRB(mlx2sbu_axi4lite_w_strobe),
+
+        .control_flows_S_AXI_ARVALID(mlx2sbu_axi4lite_ar_vld),
+        .control_flows_S_AXI_ARREADY(mlx2sbu_axi4lite_ar_rdy),
+        .control_flows_S_AXI_ARADDR(mlx2sbu_axi4lite_ar_addr),
+        // .axi4lite_ar_prot(mlx2sbu_axi4lite_ar_prot),
+
+        .control_flows_S_AXI_BVALID(mlx2sbu_axi4lite_b_vld),
+        .control_flows_S_AXI_BREADY(mlx2sbu_axi4lite_b_rdy),
+        .control_flows_S_AXI_BRESP(mlx2sbu_axi4lite_b_resp),
+
+        .control_flows_S_AXI_RVALID(mlx2sbu_axi4lite_r_vld),
+        .control_flows_S_AXI_RREADY(mlx2sbu_axi4lite_r_rdy),
+        .control_flows_S_AXI_RDATA(mlx2sbu_axi4lite_r_data),
+        .control_flows_S_AXI_RRESP(mlx2sbu_axi4lite_r_resp)
+   );
+`endif
+
   assign sbu2cxpfifo_axi4stream_tuser = {11'b0, classify_out_stream_din};
   assign sbu2cxpfifo_axi4stream_tid = 3'b0;
   assign sbu2cxpfifo_axi4stream_vld = classify_out_stream_write & firewall_data_out_tvalid;
@@ -258,7 +318,7 @@ wire           temp2;
 
 assign sbu2nwp_axi4stream_tdata = cxp2sbu_axi4stream_tdata;
 assign sbu2nwp_axi4stream_vld = cxp2sbu_axi4stream_vld;
-assign sbu2nwp_axi4stream_rdy = cxp2sbu_axi4stream_rdy;
+assign cxp2sbu_axi4stream_rdy = sbu2nwp_axi4stream_rdy;
 assign sbu2nwp_axi4stream_tkeep = cxp2sbu_axi4stream_tkeep;
 assign sbu2nwp_axi4stream_tlast = cxp2sbu_axi4stream_tlast;
 assign sbu2nwp_axi4stream_tid = cxp2sbu_axi4stream_tid;
