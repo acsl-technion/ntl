@@ -232,7 +232,7 @@ wire           temp2;
    );
 
 `else
-  XilinxSwitch firewall0(
+  XilinxSwitch_0 firewall0(
 // nica wiring borrowed from example_hls instantiation within ku060_all_exp_hls_wrapper.v:
 	.clk_line_rst(mlx2sbu_reset),
 	.clk_line(mlx2sbu_clk),
