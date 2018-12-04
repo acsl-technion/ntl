@@ -177,7 +177,7 @@ wire           temp2;
   wire firewall_data_out_tvalid;
   wire firewall_data_out_tready;
   
-  firewall_top #(
+  firewall_firewall_top #(
     .C_S_AXI_AXILITES_ADDR_WIDTH(32),
     .C_S_AXI_AXILITES_DATA_WIDTH(32)
   ) firewall0 (
