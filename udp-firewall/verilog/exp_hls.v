@@ -171,11 +171,6 @@ wire           temp2;
   wire [2:0]   sbu2cxpfifo_axi4stream_tid;
   wire [11:0]  sbu2cxpfifo_axi4stream_tuser;
 
-// {cxp,nwp} fifo to credit mask
-  wire sbu2cxp_m_axis_tvalid;
-// {cxp,nwp} fifo from credit mask
-  wire sbu2cxp_m_axis_tready;
-
   wire classify_out_stream_din;
   wire classify_out_stream_write;
   wire classify_out_stream_full_n;
@@ -252,8 +247,8 @@ wire           temp2;
   .s_axis_tlast(sbu2cxpfifo_axi4stream_tlast),              // input wire s_axis_tlast
   .s_axis_tid(sbu2cxpfifo_axi4stream_tid),                  // input wire [2 : 0] s_axis_tid
   .s_axis_tuser(sbu2cxpfifo_axi4stream_tuser),              // input wire [11 : 0] s_axis_tuser
-  .m_axis_tvalid(sbu2cxp_m_axis_tvalid),   // output wire m_axis_tvalid
-  .m_axis_tready(sbu2cxp_m_axis_tready),   // input wire m_axis_tready
+  .m_axis_tvalid(sbu2cxp_axi4stream_vld),   // output wire m_axis_tvalid
+  .m_axis_tready(sbu2cxp_axi4stream_rdy),   // input wire m_axis_tready
   .m_axis_tdata(sbu2cxp_axi4stream_tdata),  // output wire [255 : 0] m_axis_tdata
   .m_axis_tkeep(sbu2cxp_axi4stream_tkeep),  // output wire [31 : 0] m_axis_tkeep
   .m_axis_tlast(sbu2cxp_axi4stream_tlast),  // output wire m_axis_tlast
