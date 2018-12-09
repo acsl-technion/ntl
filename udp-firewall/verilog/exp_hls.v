@@ -171,9 +171,18 @@ wire           temp2;
   wire [2:0]   sbu2cxpfifo_axi4stream_tid;
   wire [11:0]  sbu2cxpfifo_axi4stream_tuser;
 
+// sbu to cxp data fifo
+  wire [255:0] fifo2sync_tdata;  
+  wire         fifo2sync_vld;
+  wire         fifo2sync_rdy;
+  wire [31:0]  fifo2sync_tkeep;
+  wire         fifo2sync_tlast;
+  wire [2:0]   fifo2sync_tid;
+  wire [11:0]  fifo2sync_tuser;
+
   wire classify_out_stream_din;
   wire classify_out_stream_write;
-  wire classify_out_stream_full_n;
+  wire classify_out_stream_full;
   wire firewall_data_out_tvalid;
   wire firewall_data_out_tready;
   
@@ -203,7 +212,7 @@ wire           temp2;
 
         .classify_out_stream_V_V_din(classify_out_stream_din),
         .classify_out_stream_V_V_write(classify_out_stream_write),
-        .classify_out_stream_V_V_full_n(classify_out_stream_full_n),
+        .classify_out_stream_V_V_full_n(~classify_out_stream_full),
 
         // axi lite
         .s_axi_AXILiteS_AWREADY(mlx2sbu_axi4lite_aw_rdy),
@@ -232,6 +241,8 @@ wire           temp2;
    );
 
 `else
+  wire tuple_in_ctrl_vld = nwp2sbu_axi4stream_strb & nwp2sbu_axi4stream_tlast;
+
   XilinxSwitch_0 firewall0(
 // nica wiring borrowed from example_hls instantiation within ku060_all_exp_hls_wrapper.v:
 	.clk_line_rst(mlx2sbu_reset),
@@ -249,7 +260,7 @@ wire           temp2;
         .packet_in_packet_in_TKEEP(nwp2sbu_axi4stream_tkeep),
         .packet_in_packet_in_TLAST(nwp2sbu_axi4stream_tlast),
 
-        .tuple_in_ctrl_VALID(nwp2sbu_axi4stream_strb),
+        .tuple_in_ctrl_VALID(tuple_in_ctrl_vld),
         .tuple_in_ctrl_DATA(1'b1),
 
         .packet_out_packet_out_TDATA(sbu2cxpfifo_axi4stream_tdata),
@@ -288,12 +299,27 @@ wire           temp2;
    );
 `endif
 
-  assign sbu2cxpfifo_axi4stream_tuser = {11'b0, classify_out_stream_din};
+wire tuple_fifo2sync_rd;
+wire tuple_fifo2sync_empty;
+wire tuple_fifo2sync_dout;
+
+fifo_1x64 tuple_fifo0 (
+    .clk(mlx2sbu_clk),
+    .srst(mlx2sbu_reset),
+
+    .wr_en(classify_out_stream_write),
+    .full(classify_out_stream_full),
+    .din(classify_out_stream_din),
+
+    .rd_en(tuple_fifo2sync_rd),
+    .empty(tuple_fifo2sync_empty),
+    .dout(tuple_fifo2sync_dout)
+);
+
+  assign sbu2cxpfifo_axi4stream_tuser = 12'b0;
   assign sbu2cxpfifo_axi4stream_tid = 3'b0;
-  assign sbu2cxpfifo_axi4stream_vld = classify_out_stream_write & firewall_data_out_tvalid;
-  wire sbu2cxpfifo_axi4stream_strb = sbu2cxpfifo_axi4stream_vld & sbu2cxpfifo_axi4stream_rdy;
-  assign classify_out_stream_full_n = sbu2cxpfifo_axi4stream_strb;
-  assign firewall_data_out_tready = sbu2cxpfifo_axi4stream_strb;
+  assign sbu2cxpfifo_axi4stream_vld = firewall_data_out_tvalid;
+  assign firewall_data_out_tready = sbu2cxpfifo_axi4stream_rdy;
   
   // 64 deep store & forward fifos.
   // For more fifo details, see <netperf-verilog_workarea>/sources/xci/axis_data_fifo_0/axis_data_fifo_0.xci
@@ -307,14 +333,39 @@ wire           temp2;
   .s_axis_tlast(sbu2cxpfifo_axi4stream_tlast),              // input wire s_axis_tlast
   .s_axis_tid(sbu2cxpfifo_axi4stream_tid),                  // input wire [2 : 0] s_axis_tid
   .s_axis_tuser(sbu2cxpfifo_axi4stream_tuser),              // input wire [11 : 0] s_axis_tuser
-  .m_axis_tvalid(sbu2cxp_axi4stream_vld),   // output wire m_axis_tvalid
-  .m_axis_tready(sbu2cxp_axi4stream_rdy),   // input wire m_axis_tready
-  .m_axis_tdata(sbu2cxp_axi4stream_tdata),  // output wire [255 : 0] m_axis_tdata
-  .m_axis_tkeep(sbu2cxp_axi4stream_tkeep),  // output wire [31 : 0] m_axis_tkeep
-  .m_axis_tlast(sbu2cxp_axi4stream_tlast),  // output wire m_axis_tlast
-  .m_axis_tid(sbu2cxp_axi4stream_tid),      // output wire [2 : 0] m_axis_tid
-  .m_axis_tuser(sbu2cxp_axi4stream_tuser)   // output wire [11 : 0] m_axis_tuser
+  .m_axis_tvalid(fifo2sync_vld),   // output wire m_axis_tvalid
+  .m_axis_tready(fifo2sync_rdy),   // input wire m_axis_tready
+  .m_axis_tdata(fifo2sync_tdata),  // output wire [255 : 0] m_axis_tdata
+  .m_axis_tkeep(fifo2sync_tkeep),  // output wire [31 : 0] m_axis_tkeep
+  .m_axis_tlast(fifo2sync_tlast),  // output wire m_axis_tlast
+  .m_axis_tid(fifo2sync_tid),      // output wire [2 : 0] m_axis_tid
+  .m_axis_tuser(fifo2sync_tuser)   // output wire [11 : 0] m_axis_tuser
 );
+
+// sync data and tuple
+wire sbu2cxp_axi4stream_strb = sbu2cxp_axi4stream_vld & sbu2cxp_axi4stream_rdy;
+reg sbu2cxp_first = 1'b1;
+
+always @(posedge mlx2sbu_clk) begin
+    if (sbu2cxp_axi4stream_strb) begin
+        if (sbu2cxp_first)
+            sbu2cxp_first <= 1'b0;
+        else if (sbu2cxp_axi4stream_tlast)
+            sbu2cxp_first <= 1'b1;
+    end
+end
+
+assign sbu2cxp_axi4stream_tdata = fifo2sync_tdata;
+assign sbu2cxp_axi4stream_tkeep = fifo2sync_tkeep;
+assign sbu2cxp_axi4stream_tlast = fifo2sync_tlast;
+assign sbu2cxp_axi4stream_tid = fifo2sync_tid;
+assign sbu2cxp_axi4stream_tuser = fifo2sync_tuser |
+       (sbu2cxp_first ? {11'b0, tuple_fifo2sync_dout} : 12'b0);
+assign sbu2cxp_axi4stream_vld = fifo2sync_vld & (sbu2cxp_first ?
+    ~tuple_fifo2sync_empty : 1'b1);
+assign tuple_fifo2sync_rd = sbu2cxp_first & sbu2cxp_axi4stream_strb;
+assign fifo2sync_rdy = sbu2cxp_axi4stream_rdy & (sbu2cxp_first ?
+    ~tuple_fifo2sync_empty : 1'b1);
 
 assign sbu2nwp_axi4stream_tdata = cxp2sbu_axi4stream_tdata;
 assign sbu2nwp_axi4stream_vld = cxp2sbu_axi4stream_vld;
