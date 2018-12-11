@@ -1,0 +1,8 @@
+.*.swp
+vivado_hls.log
+vivado.log
+vivado.jou
+/udp-firewall/build/
+/udp-firewall/build-p4/
+/udp-firewall/hls/firewall/
+/udp-firewall/p4/build
