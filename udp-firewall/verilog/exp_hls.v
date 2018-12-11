@@ -243,6 +243,19 @@ wire           temp2;
 `else
   wire tuple_in_ctrl_vld = nwp2sbu_axi4stream_strb & nwp2sbu_axi4stream_tlast;
 
+  wire [255:0] nwp2sbu_axi4stream_tdata_flip, sbu2cxpfifo_axi4stream_tdata_flip;
+  wire [31:0]  nwp2sbu_axi4stream_tkeep_flip, sbu2cxpfifo_axi4stream_tkeep_flip;
+
+  byte_swap #(.N(32)) bs_nwp2sbu_tdata (
+      .in(nwp2sbu_axi4stream_tdata),
+      .out(nwp2sbu_axi4stream_tdata_flip)
+  );
+  
+  bit_swap #(.N(32)) bs_nwp2sbu_tkeep (
+      .in(nwp2sbu_axi4stream_tkeep),
+      .out(nwp2sbu_axi4stream_tkeep_flip)
+  );
+
   XilinxSwitch_0 firewall0(
 // nica wiring borrowed from example_hls instantiation within ku060_all_exp_hls_wrapper.v:
 	.clk_line_rst(mlx2sbu_reset),
@@ -254,19 +267,19 @@ wire           temp2;
 
         .enable_processing(1'b1),
 
-        .packet_in_packet_in_TDATA(nwp2sbu_axi4stream_tdata),
+        .packet_in_packet_in_TDATA(nwp2sbu_axi4stream_tdata_flip),
         .packet_in_packet_in_TVALID(nwp2sbu_axi4stream_vld),
         .packet_in_packet_in_TREADY(nwp2sbu_axi4stream_rdy),
-        .packet_in_packet_in_TKEEP(nwp2sbu_axi4stream_tkeep),
+        .packet_in_packet_in_TKEEP(nwp2sbu_axi4stream_tkeep_flip),
         .packet_in_packet_in_TLAST(nwp2sbu_axi4stream_tlast),
 
         .tuple_in_ctrl_VALID(tuple_in_ctrl_vld),
         .tuple_in_ctrl_DATA(1'b1),
 
-        .packet_out_packet_out_TDATA(sbu2cxpfifo_axi4stream_tdata),
+        .packet_out_packet_out_TDATA(sbu2cxpfifo_axi4stream_tdata_flip),
         .packet_out_packet_out_TVALID(firewall_data_out_tvalid),
         .packet_out_packet_out_TREADY(firewall_data_out_tready),
-        .packet_out_packet_out_TKEEP(sbu2cxpfifo_axi4stream_tkeep),
+        .packet_out_packet_out_TKEEP(sbu2cxpfifo_axi4stream_tkeep_flip),
         .packet_out_packet_out_TLAST(sbu2cxpfifo_axi4stream_tlast),
 
         .tuple_out_ctrl_VALID(classify_out_stream_write),
@@ -297,6 +310,16 @@ wire           temp2;
         .control_flows_S_AXI_RDATA(mlx2sbu_axi4lite_r_data),
         .control_flows_S_AXI_RRESP(mlx2sbu_axi4lite_r_resp)
    );
+
+  byte_swap #(.N(32)) bs_sbu2cxpfifo_tdata (
+      .in(sbu2cxpfifo_axi4stream_tdata_flip),
+      .out(sbu2cxpfifo_axi4stream_tdata)
+  );
+  
+  bit_swap #(.N(32)) bs_sbu2cxpfifo_tkeep (
+      .in(sbu2cxpfifo_axi4stream_tkeep_flip),
+      .out(sbu2cxpfifo_axi4stream_tkeep)
+  );
 `endif
 
 wire tuple_fifo2sync_rd;
