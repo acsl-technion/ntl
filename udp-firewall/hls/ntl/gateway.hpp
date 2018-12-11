@@ -41,7 +41,7 @@ enum {
 namespace ntl {
     template <typename T>
     struct gateway_registers {
-        gateway_registers() : cmd({0, 0, 0}), data(0), done(0) {}
+        gateway_registers() : cmd({0, 0}), data(), done(0) {}
 
         struct {
             ap_uint<31> addr;
