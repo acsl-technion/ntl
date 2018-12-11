@@ -53,5 +53,6 @@ ln -snf ../../../../xci user/examples/exp_hls/xci
 cd user/examples/exp_hls/vlog
 cp -sf ../../../../../verilog/* .
 cp -sf ../../../../../hls/firewall/40Gbps/impl/ip/hdl/verilog/*.v .
+cp -sf ../../../../../hls/firewall/40Gbps/impl/ip/hdl/verilog/*.dat .
 
 cd -
