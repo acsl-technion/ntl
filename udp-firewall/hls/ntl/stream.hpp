@@ -22,6 +22,9 @@ namespace ntl {
     class stream<T, ap_fifo_tag>
     {
     public:
+        stream() = default;
+        explicit stream(const char *name) : _stream(name) {}
+
         template <typename U>
         void write(const U& u)
         {
@@ -56,6 +59,9 @@ namespace ntl {
     class stream<T, axi_stream_input_tag>
     {
     public:
+        stream() = default;
+        explicit stream(const char *name) : _stream(name) {}
+
         T read()
         {
 #pragma HLS inline
@@ -75,6 +81,9 @@ namespace ntl {
     class stream<T, axi_stream_output_tag>
     {
     public:
+        stream() = default;
+        explicit stream(const char *name) : _stream(name) {}
+
         template <typename U>
         void write(const U& u)
         {
