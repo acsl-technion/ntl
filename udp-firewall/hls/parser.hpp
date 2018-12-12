@@ -42,7 +42,7 @@ class counter : public ntl::fold<T, Counter, true>
 public:
     typedef ntl::fold<T, Counter, true> base;
     typedef typename base::in_t in_t;
-    counter() : base(0) {}
+    counter() : base(-1) {}
 
     void step(in_t& in)
     {
