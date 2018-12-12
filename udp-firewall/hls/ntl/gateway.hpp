@@ -56,6 +56,8 @@ namespace ntl {
     template <typename derived, typename T>
     class gateway_impl {
     public:
+        gateway_impl() : axilite_gateway_done(false) {}
+
         static void gateway(derived* instance, gateway_registers<T>& r) {
 #pragma HLS pipeline enable_flush ii=1
         DO_PRAGMA_SYN(HLS data_pack variable=r.cmd)

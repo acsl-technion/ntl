@@ -18,6 +18,11 @@ struct metadata {
     ap_uint<16> ether_type, udp_source, udp_dest;
     ap_uint<8> ip_protocol;
 
+    metadata() :
+        ip_source(0), ip_dest(0), ether_type(0), udp_source(0), udp_dest(0),
+        ip_protocol(0)
+    {}
+
     bool valid_ip() const
     {
         return ether_type == ETHERTYPE_IP;
@@ -94,7 +99,8 @@ class extract_metadata : public ntl::fold<numbered_data, metadata, false>
 public:
     typedef ntl::fold<numbered_data, metadata, false> base;
     typedef typename base::in_t in_t;
-    extract_metadata() : base(metadata{}) {}
+    extract_metadata() : base(metadata())
+    {}
 
     void step(in_t& in)
     {

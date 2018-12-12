@@ -12,7 +12,8 @@ namespace ntl {
         typedef stream<Out> out_t;
         out_t out;
 
-        explicit fold(Out&& initial) : _initial(initial) {}
+        explicit fold(const Out& initial) : _initial(initial), _current(initial)
+        {}
 
         template <typename Func>
         void step(in_t& in, Func&& f)
