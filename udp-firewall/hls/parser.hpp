@@ -87,11 +87,13 @@ namespace ntl {
 }
 
 template <unsigned start, unsigned end, typename T>
-ap_uint<8 * (end - start)> range(T val)
+ap_uint<8 * (end - start)> range(const T& val)
 {
     static_assert(end > start, "Invalid range.");
 
-    return val(8 * end - 1, 8 * start);
+    const int width = T::width;
+
+    return val(width - 8 * start - 1, width - 8 * end);
 }
 
 class extract_metadata : public ntl::fold<numbered_data, metadata, false>
