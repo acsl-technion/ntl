@@ -5,10 +5,11 @@ proc create_project {name top dir files tb_files} {
 
     global env
     set_top $top
-    set cflags "-std=gnu++0x \
-                -Wno-gnu-designator"
+    set GTEST_ROOT $::env(GTEST_ROOT)
+    set cflags "-std=gnu++0x -Wno-gnu-designator \
+                -I$GTEST_ROOT/include"
 
-    set ldflags "-lpcap"
+    set ldflags "-lpcap -L$GTEST_ROOT -lgtest"
 
     foreach f $files {
         set f [file join $dir $f]
