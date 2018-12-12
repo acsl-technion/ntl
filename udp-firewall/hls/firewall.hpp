@@ -41,10 +41,10 @@ namespace ntl {
 
         static hash_tag from_int(const ap_uint<width>& d) {
             return hash_tag{
-                range<8, 12>(d),
+                range<0, 4>(d),
                 range<4, 8>(d),
-                range<2, 4>(d),
-                range<0, 2>(d)};
+                range<8, 10>(d),
+                range<10, 12>(d)};
         }
     };
 }
