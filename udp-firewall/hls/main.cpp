@@ -139,6 +139,15 @@ int main(int argc, char **argv)
     axi_data_stream in_fifo("in_fifo"), out_fifo("out_fifo");
     bool_stream classify_out("classify_out");
     gateway_registers regs = {};
+    regs.cmd = { FIREWALL_ADD, 1};
+    regs.data.tag.ip_source = regs.data.tag.ip_dest = 0x7f000001;
+    regs.data.tag.udp_source = 0x12;
+    regs.data.tag.udp_dest = 0x0bad;
+    regs.data.result = 1;
+    for (int i = 0; i < 15; ++i)
+        f.step(in_fifo, out_fifo, classify_out, regs);
+    assert(regs.done);
+    assert(regs.data.status);
 
     read_pcap(argv[1], in_fifo, 0, 1000000);
 
