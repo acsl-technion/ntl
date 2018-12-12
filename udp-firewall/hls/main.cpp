@@ -66,7 +66,7 @@ int read_pcap(
     return context.count;
 }
 
-int write_pcap(FILE* file, axi_data_stream& stream, bool expected_lossy)
+int write_pcap(FILE* file, axi_data_stream& stream, bool_stream& classify_out)
 {
     int ret;
     int count = 0;
@@ -102,6 +102,11 @@ int write_pcap(FILE* file, axi_data_stream& stream, bool expected_lossy)
                     break;
             /* Minimum Ethernet packet length is 64 bytes including the FCS */
             h.caplen = h.len;
+            assert(!classify_out.empty());
+            if (!classify_out.read()) { // drop 
+                pcap_dump((u_char *)output, &h, buffer);
+                ++count;
+            }
             h.len = 0;
         } else {
             EXPECT_EQ(~w.keep, 0);
@@ -123,13 +128,24 @@ int write_pcap(FILE* file, axi_data_stream& stream, bool expected_lossy)
     return count;
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    firewall f;
-    axi_data_stream in_fifo, out_fifo;
-    bool_stream classify_out;
-    gateway_registers regs;
+    if (argc < 2) {
+        printf("Usage: %s in.pcap out.pcap\n", argv[0]);
+        return 1;
+    }
 
-    f.step(in_fifo, out_fifo, classify_out, regs);
+    firewall f;
+    axi_data_stream in_fifo("in_fifo"), out_fifo("out_fifo");
+    bool_stream classify_out("classify_out");
+    gateway_registers regs = {};
+
+    read_pcap(argv[1], in_fifo, 0, 1000000);
+
+    for (int i = 0; i < 3000; ++i)
+        f.step(in_fifo, out_fifo, classify_out, regs);
+
+    FILE *out = fopen(argv[2], "w");
+    write_pcap(out, out_fifo, classify_out);
     return 0;
 }
