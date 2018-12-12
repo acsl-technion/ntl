@@ -116,7 +116,7 @@ public:
 
             if (index == 0) {
                 ret.ether_type = range<12, 14>(flit.data);
-                ret.ip_protocol = range<21, 22>(flit.data);
+                ret.ip_protocol = range<23, 24>(flit.data);
                 ret.ip_source = range<26, 30>(flit.data);
                 ret.ip_dest(31, 16) = range<30, 32>(flit.data);
             } else if (index == 1) {
