@@ -26,7 +26,7 @@ void firewall::step(axi_data_stream& in, axi_data_stream& data_out, bool_stream&
     });
 
     ntl::map(hash.results, result_with_default, [](const ntl::maybe<std::tuple<uint32_t, hash_t::mapped_type> >& val) {
-        return val.valid() ? std::get<1>(val.value()) : ap_uint<1>(1);
+        return val.valid() ? std::get<1>(val.value()) : ap_uint<1>(0);
     });
 
     merge_hash_results.step(std::logical_or<ap_uint<1> >(),
