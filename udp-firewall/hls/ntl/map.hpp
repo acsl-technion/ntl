@@ -4,8 +4,8 @@
 
 namespace ntl {
 
-    template <typename T, typename U, typename Func>
-    void map(stream<T>& in, stream<U>& out, Func&& f)
+    template <typename InputStream, typename OutputStream, typename Func>
+    void map(InputStream& in, OutputStream& out, Func&& f)
     {
 #pragma HLS pipeline
         if (in.empty() || out.full())
