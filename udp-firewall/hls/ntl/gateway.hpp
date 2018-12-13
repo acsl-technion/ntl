@@ -58,12 +58,12 @@ namespace ntl {
     public:
         gateway_impl() : axilite_gateway_done(false) {}
 
-        template <typename Instance>
-        void gateway(Instance& instance, gateway_registers<T>& r) {
+        template <typename Func>
+        void gateway(gateway_registers<T>& r, Func&& f) {
 #pragma HLS pipeline enable_flush ii=1
         DO_PRAGMA_SYN(HLS data_pack variable=r.cmd)
             if (r.cmd.go && !axilite_gateway_done) {
-                int res = instance.rpc(r.cmd.addr, r.data);
+                int res = f(r.cmd.addr, r.data);
                 if (res != GW_BUSY) {
                     axilite_gateway_done = true;
                     r.done = 1;

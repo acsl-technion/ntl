@@ -10,7 +10,7 @@ void firewall::step(axi_data_stream& in, axi_data_stream& data_out, bool_stream&
 {
 #pragma HLS inline
 #pragma HLS stream variable=invalid_udp depth=16
-    gateway.gateway(*this, g);
+    gateway.gateway(g, [&](int addr, gateway_data& data) -> int { return rpc(addr, data); });
 
     dup_data.step(in);
     parse.step(dup_data._streams[0]);
