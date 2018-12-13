@@ -74,13 +74,15 @@ typedef ntl::gateway_registers<gateway_data> gateway_registers;
 typedef ntl::stream<ap_uint<1> > bool_stream;
 typedef ntl::hash_table_wrapper<hash_tag, ap_uint<1>, 1024> hash_t;
 
-class firewall : public ntl::gateway_impl<firewall, gateway_data>
+class firewall
 {
 public:
     void step(axi_data_stream& in, axi_data_stream& data_out, bool_stream& classify_out, gateway_registers& g);
     int rpc(int addr, gateway_data& data);
 
 private:
+    ntl::gateway_impl<gateway_data> gateway;
+
     ntl::dup<axi_data, 2> dup_data;
     ntl::dup<metadata, 2> dup_metadata;
     parser parse;

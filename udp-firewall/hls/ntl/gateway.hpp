@@ -53,22 +53,23 @@ namespace ntl {
         ap_uint<1> done;
     };
 
-    template <typename derived, typename T>
+    template <typename T>
     class gateway_impl {
     public:
         gateway_impl() : axilite_gateway_done(false) {}
 
-        static void gateway(derived* instance, gateway_registers<T>& r) {
+        template <typename Instance>
+        void gateway(Instance& instance, gateway_registers<T>& r) {
 #pragma HLS pipeline enable_flush ii=1
         DO_PRAGMA_SYN(HLS data_pack variable=r.cmd)
-            if (r.cmd.go && !instance->axilite_gateway_done) {
-                int res = instance->rpc(r.cmd.addr, r.data);
+            if (r.cmd.go && !axilite_gateway_done) {
+                int res = instance.rpc(r.cmd.addr, r.data);
                 if (res != GW_BUSY) {
-                    instance->axilite_gateway_done = true;
+                    axilite_gateway_done = true;
                     r.done = 1;
                 }
-            } else if (!r.cmd.go && instance->axilite_gateway_done) {
-                instance->axilite_gateway_done = false;
+            } else if (!r.cmd.go && axilite_gateway_done) {
+                axilite_gateway_done = false;
                 r.done = 0;
             }
         }
