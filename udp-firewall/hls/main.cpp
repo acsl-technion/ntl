@@ -27,11 +27,11 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *h, const u_char *byt
         goto end;
 
     for (unsigned word = 0; word < ALIGN(h->len, b); word += b) {
-        axi_data input(0, 0xffffffff, false);
+        ntl::axi_data input(0, 0xffffffff, false);
         for (unsigned byte = 0; byte < b && word + byte < h->len; ++byte)
             input.data(input.data.width - 1 - 8 * byte, input.data.width - 8 - 8 * byte) = bytes[word + byte];
         if ((word + b) >= h->len) {
-            input.keep = axi_data::keep_bytes(h->len - word - b);
+            input.keep = ntl::axi_data::keep_bytes(h->len - word - b);
             input.last = true;
         }
 
@@ -88,7 +88,7 @@ int write_pcap(FILE* file, axi_data_stream& stream, bool_stream& classify_out)
     h.len = 0;
 
     while (!stream.empty()) {
-        axi_data w = stream.read();
+        ntl::axi_data w = stream.read();
 
         for (int byte = 0; byte < w.data.width / 8; ++byte)
             buffer[h.len + byte] = w.data(w.data.width - 1 - byte * 8,

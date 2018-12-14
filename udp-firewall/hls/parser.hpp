@@ -7,12 +7,12 @@
 #include "ntl/fold.hpp"
 #include "ntl/link.hpp"
 #include "ntl/enumerate.hpp"
-#include "axi_data.hpp"
+#include "ntl/axi_data.hpp"
 
 #include <net/ethernet.h>
 #include <netinet/in.h>
 
-typedef ntl::stream<axi_data> axi_data_stream;
+typedef ntl::stream<ntl::axi_data> axi_data_stream;
 
 struct metadata {
     ap_uint<32> ip_source, ip_dest;
@@ -37,7 +37,7 @@ struct metadata {
 
 typedef ntl::stream<metadata> metadata_stream;
 
-typedef std::tuple<ap_uint<16>, axi_data> numbered_data;
+typedef std::tuple<ap_uint<16>, ntl::axi_data> numbered_data;
 
 namespace ntl {
     template <>
@@ -70,7 +70,7 @@ public:
 #pragma HLS pipeline
         base::step(in, [](const metadata& cur, const numbered_data& num_data) -> metadata {
             metadata ret = cur;
-            axi_data flit;
+            ntl::axi_data flit;
             ap_uint<16> index;
 
             std::tie(index, flit) = num_data;
@@ -141,6 +141,6 @@ public:
     }
 
 private:
-    ntl::enumerate<axi_data> _enum;
+    ntl::enumerate<ntl::axi_data> _enum;
     extract_metadata _extract;
 };

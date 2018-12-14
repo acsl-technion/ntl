@@ -83,7 +83,7 @@ public:
 private:
     ntl::gateway_impl<gateway_data> gateway;
 
-    ntl::dup<axi_data, 2> dup_data;
+    ntl::dup<ntl::axi_data, 2> dup_data;
     ntl::dup<metadata, 2> dup_metadata;
     parser parse;
     hash_t hash;
