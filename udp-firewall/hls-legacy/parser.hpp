@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ntl/dup.hpp"
-#include "ntl/consume.hpp"
 #include "ntl/link.hpp"
 #include "ntl/axi_data.hpp"
 

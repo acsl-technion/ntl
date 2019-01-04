@@ -32,7 +32,6 @@
 
 #include "maybe.hpp"
 #include "macros.hpp"
-#include "constexpr.hpp"
 
 #undef CACHE_ENABLE_DEBUG_COMMANDS
 
