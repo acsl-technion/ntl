@@ -1,7 +1,5 @@
 #pragma once
 
-#include "stream.hpp"
-
 namespace ntl {
 
     template <typename InputStream, typename OutputStream, typename Func>
