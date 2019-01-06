@@ -71,10 +71,7 @@ void hash_table(tag_stream& lookups, lookup_result_stream& results,
     hls::stream<gateway_command>& gateway_commands,
     hls::stream<gateway_response>& gateway_responses)
 {
-    /* Debug access command: index in the hash table and read/write bit */
-
-
-    hash_table_t _table;
+    static hash_table_t _table;
 
 #pragma HLS pipeline enable_flush ii=3
     /* Gateway access are highest priority as they are more rare and lower
