@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ntl/cache.hpp"
+#include <boost/functional/hash.hpp>
 
 enum {
     FIREWALL_ADD = 1,
@@ -62,7 +62,6 @@ struct gateway_registers {
 };
 
 typedef hls::stream<ap_uint<1> > bool_stream;
-typedef ntl::hash_table_wrapper<hash_tag, ap_uint<1>, 1024, 10> hash_t;
 
 void firewall_top(hls::stream<ntl::raw_axi_data>& in,
                   hls::stream<ntl::raw_axi_data>& data_out,

@@ -18,3 +18,11 @@ echo ----
 echo Library:
 cmd cloc $dir/../hls/ntl/
 echo ----
+
+echo Legacy firewall:
+cmd cloc $(find $dir/../hls-legacy/ -maxdepth 1 -name '*.[hc]pp' -not -name main.cpp)
+echo ----
+
+echo Legacy library:
+cmd cloc $dir/../hls-legacy/ntl/
+echo ----

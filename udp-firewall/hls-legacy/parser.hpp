@@ -19,16 +19,19 @@ struct metadata {
         ip_protocol(0)
     {}
 
-    bool valid_ip() const
-    {
-        return ether_type == ETHERTYPE_IP;
-    }
-
-    bool valid_udp() const
-    {
-        return valid_ip() && ip_protocol == IPPROTO_UDP;
-    }
 };
+
+inline bool valid_ip(metadata m)
+{
+#pragma HLS inline
+    return m.ether_type == ETHERTYPE_IP;
+}
+
+inline bool valid_udp(metadata m)
+{
+#pragma HLS inline
+    return valid_ip(m) && m.ip_protocol == IPPROTO_UDP;
+}
 
 typedef hls::stream<metadata> metadata_stream;
 
@@ -45,30 +48,44 @@ ap_uint<8 * (end - start)> range(const T& val)
 inline void parser(axi_data_stream& in, metadata_stream& out)
 {
 #pragma HLS pipeline
-    static ap_uint<16> index = 0;
+    static enum { IDLE, FIRST, REST } state = IDLE;
     static metadata ret;
 
     ntl::axi_data flit;
 
-    if (in.empty() || out.full())
-        return;
+    switch (state) {
+    case IDLE:
+        if (in.empty() || out.full())
+            return;
 
-    if (index == 0) {
+        in.read_nb(flit);
+        ret = metadata();
         ret.ether_type = range<12, 14>(flit.data);
         ret.ip_protocol = range<23, 24>(flit.data);
         ret.ip_source = range<26, 30>(flit.data);
         ret.ip_dest(31, 16) = range<30, 32>(flit.data);
-    } else if (index == 1) {
+        state = flit.last ? IDLE : FIRST;
+        if (flit.last)
+            out.write_nb(ret);
+        break;
+    case FIRST:
+        if (in.empty() || out.full())
+            return;
+
+        in.read_nb(flit);
         ret.ip_dest(15, 0) = range<0, 2>(flit.data);
         ret.udp_source = range<2, 4>(flit.data);
         ret.udp_dest = range<4, 6>(flit.data);
-    }
-    if (flit.last) {
-        out.write(ret);
-        ret = metadata();
-        index = 0;
-    } else {
-        index++;
+        out.write_nb(ret);
+        state = flit.last ? IDLE : REST;
+        break;
+    case REST:
+        if (in.empty())
+            return;
+
+        in.read_nb(flit);
+        state = flit.last ? IDLE : REST;
+        break;
     }
 }
 
