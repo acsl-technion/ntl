@@ -27,6 +27,8 @@
 
 #include "macros.hpp"
 
+#include <ap_int.h>
+
 #define GATEWAY_OFFSET(gateway, offset_cmd, offset_data, offset_done) \
     DO_PRAGMA_SYN(HLS interface s_axilite port=gateway.cmd offset=offset_cmd) \
     DO_PRAGMA_SYN(HLS interface s_axilite port=gateway.data offset=offset_data) \
