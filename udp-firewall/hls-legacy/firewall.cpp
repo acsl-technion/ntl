@@ -97,7 +97,7 @@ void firewall_step(axi_data_stream& in, axi_data_stream& data_out, bool_stream& 
 
 void firewall_top(hls::stream<ntl::raw_axi_data>& in,
                   hls::stream<ntl::raw_axi_data>& data_out,
-                  bool_stream& classify_out, gateway_registers& g)
+                  bool_stream& classify_out_stream, gateway_registers& g)
 {
 #pragma HLS dataflow
 #pragma HLS interface ap_ctrl_none port=return
@@ -112,5 +112,5 @@ void firewall_top(hls::stream<ntl::raw_axi_data>& in,
     ntl::link(in, in_fifo);
 #pragma HLS stream variable=out_fifo depth=16
     ntl::link(out_fifo, data_out);
-    firewall_step(in_fifo, out_fifo, classify_out, g);
+    firewall_step(in_fifo, out_fifo, classify_out_stream, g);
 }
