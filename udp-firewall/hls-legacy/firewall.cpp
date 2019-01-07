@@ -25,7 +25,7 @@ void gateway(gateway_registers& r,
     hls::stream<gateway_response>& gateway_responses)
 {
     static bool axilite_gateway_done;
-#pragma HLS pipeline enable_flush ii=2
+#pragma HLS pipeline enable_flush ii=3
 DO_PRAGMA_SYN(HLS data_pack variable=r.cmd)
     if (r.cmd.go && !axilite_gateway_done) {
         int res = firewall_rpc(r.cmd.addr, r.data, gateway_commands,
@@ -55,7 +55,7 @@ void map_metadata_to_hash_lookup(metadata_stream& in,
 void merge_hash_results(lookup_result_stream& results,
                         metadata_stream& metadata_in, bool_stream &classify_out)
 {
-#pragma HLS pipeline ii=3
+#pragma HLS pipeline ii=1
     if (results.empty() || metadata_in.empty() || classify_out.full())
         return;
     
@@ -70,12 +70,9 @@ void merge_hash_results(lookup_result_stream& results,
 void firewall_step(axi_data_stream& in, axi_data_stream& data_out, bool_stream& classify_out, gateway_registers& g)
 {
 #pragma HLS inline
-#pragma HLS stream variable=invalid_udp depth=16
-    static bool_stream invalid_udp;
-    static bool_stream result_with_default;
-
     static axi_data_stream dup_to_parse;
     static metadata_stream parse_to_dup, dup_metadata_to_hash, dup_metadata_to_invalid;
+#pragma HLS stream variable=dup_metadata_to_invalid depth=16
 
     static hls::stream<gateway_command> gateway_commands;
     static hls::stream<gateway_response> gateway_responses;
