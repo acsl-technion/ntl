@@ -5,6 +5,11 @@ find_path(XILINX_VIVADO
     PATHS /opt/Xilinx/Vivado/2018.2/bin
     DOC "Xilinx Vivado path")
 
+find_path(XILINX_SDNET
+    "sdnet"
+    PATHS /opt/Xilinx/SDNet/2018.2/bin
+    DOC "Xilinx SDNet path")
+
 set(GTEST_ROOT "$ENV{GTEST_ROOT}" CACHE PATH "Root directory of gtest installation")
 find_package(GTest REQUIRED)
 
@@ -26,6 +31,7 @@ function(add_hls_target target_name tcl deps)
 endfunction()
 
 add_custom_target(hls)
+add_custom_target(p4)
 
 add_subdirectory(examples/udp-firewall/)
 add_dependencies(hls firewall-hls)
@@ -34,5 +40,7 @@ if(BUILD_EVALUATION)
     add_dependencies(hls schedulers-hls)
     add_subdirectory(evaluation/hls-legacy/)
     add_dependencies(hls firewall-legacy-hls)
+    add_subdirectory(evaluation/p4)
+    add_dependencies(p4 firewall-p4)
 endif()
 
