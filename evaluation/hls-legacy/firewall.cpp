@@ -59,7 +59,7 @@ void merge_hash_results(lookup_result_stream& results,
     if (results.empty() || metadata_in.empty() || classify_out.full())
         return;
     
-    ntl::maybe<std::pair<uint32_t, ap_uint<1> > > val = results.read();
+    ntl_legacy::maybe<std::pair<uint32_t, ap_uint<1> > > val = results.read();
     metadata m = metadata_in.read();
      
     bool forward = !valid_udp(m) ||
@@ -92,8 +92,8 @@ void firewall_step(axi_data_stream& in, axi_data_stream& data_out, bool_stream& 
     merge_hash_results(results, dup_metadata_to_invalid, classify_out);
 }
 
-void firewall_top(hls::stream<ntl::raw_axi_data>& in,
-                  hls::stream<ntl::raw_axi_data>& data_out,
+void firewall_top(hls::stream<ntl_legacy::raw_axi_data>& in,
+                  hls::stream<ntl_legacy::raw_axi_data>& data_out,
                   bool_stream& classify_out_stream, gateway_registers& g)
 {
 #pragma HLS dataflow
@@ -106,8 +106,8 @@ void firewall_top(hls::stream<ntl::raw_axi_data>& in,
 #pragma HLS interface s_axilite port=g.done offset=0xfc
 
     static axi_data_stream in_fifo, out_fifo;
-    ntl::link(in, in_fifo);
+    ntl_legacy::link(in, in_fifo);
 #pragma HLS stream variable=out_fifo depth=16
-    ntl::link(out_fifo, data_out);
+    ntl_legacy::link(out_fifo, data_out);
     firewall_step(in_fifo, out_fifo, classify_out_stream, g);
 }

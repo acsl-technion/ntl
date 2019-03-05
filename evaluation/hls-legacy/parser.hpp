@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ntl/dup.hpp"
-#include "ntl/link.hpp"
-#include "ntl/axi_data.hpp"
+#include "ntl-legacy/dup.hpp"
+#include "ntl-legacy/link.hpp"
+#include "ntl-legacy/axi_data.hpp"
 
 #include <net/ethernet.h>
 #include <netinet/in.h>
 
-typedef hls::stream<ntl::axi_data> axi_data_stream;
+typedef hls::stream<ntl_legacy::axi_data> axi_data_stream;
 
 struct metadata {
     ap_uint<32> ip_source, ip_dest;
@@ -51,7 +51,7 @@ inline void parser(axi_data_stream& in, metadata_stream& out)
     static enum { IDLE, FIRST, REST } state = IDLE;
     static metadata ret;
 
-    ntl::axi_data flit;
+    ntl_legacy::axi_data flit;
 
     switch (state) {
     case IDLE:
@@ -88,41 +88,3 @@ inline void parser(axi_data_stream& in, metadata_stream& out)
         break;
     }
 }
-
-/*
-template <unsigned start, unsigned end>
-class extract_header
-{
-public:
-    extract_header() : _flit_count(0) {}
-
-    static const unsigned len = end - start;
-    typedef ap_uint<8 * len> field_t;
-    typedef ntl::stream<field_t> field_stream;
-    field_stream out;
-
-    void step(axi_data_stream& in)
-    {
-        static_assert(31 / 32 == (30 / 32), "No support for fields that span multiple flits at the moment.");
-        static_assert((end - 1) / 32 == (start / 32), "No support for fields that span multiple flits at the moment.");
-
-        if (in.empty())
-            return;
-
-        if (start / 32 != _flit_count++) {
-            in.read();
-        } else {
-            if (out.full())
-                return;
-
-            auto flit = in.read();
-            out.write(flit.data(8 * end - 1, 8 * start));
-            if (flit.last)
-                _flit_count = 0;
-        }
-    }
-
-private:
-    ap_uint<16> _flit_count;
-};
-*/

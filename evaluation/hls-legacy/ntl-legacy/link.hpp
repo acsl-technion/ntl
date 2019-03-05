@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ntl {
+namespace ntl_legacy {
 
     template <typename InputStream, typename OutputStream>
     void link(InputStream& in, OutputStream& out)

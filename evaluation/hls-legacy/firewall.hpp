@@ -63,6 +63,6 @@ struct gateway_registers {
 
 typedef hls::stream<ap_uint<1> > bool_stream;
 
-void firewall_top(hls::stream<ntl::raw_axi_data>& in,
-                  hls::stream<ntl::raw_axi_data>& data_out,
+void firewall_top(hls::stream<ntl_legacy::raw_axi_data>& in,
+                  hls::stream<ntl_legacy::raw_axi_data>& data_out,
                   bool_stream& classify_out, gateway_registers& g);

@@ -25,7 +25,7 @@
 
 #pragma once
 
-namespace ntl {
+namespace ntl_legacy {
 
     template <typename Value>
     class maybe {

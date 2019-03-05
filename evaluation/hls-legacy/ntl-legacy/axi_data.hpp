@@ -28,7 +28,7 @@
 #include <ap_int.h>
 #include <boost/operators.hpp>
 
-namespace ntl {
+namespace ntl_legacy {
     struct raw_axi_data {
         ap_uint<256> data;
         ap_uint<32> keep;

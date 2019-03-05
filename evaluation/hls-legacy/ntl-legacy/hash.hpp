@@ -27,7 +27,7 @@
 
 #include "maybe.hpp"
 
-namespace ntl {
+namespace ntl_legacy {
     template <typename Tag, typename Value, unsigned Size, int max_hops = Size, bool insert_overrides = true>
     class hash
     {
@@ -48,16 +48,16 @@ namespace ntl {
             }
         }
 
-        ntl::maybe<index_t> insert(const Tag& key, const Value& value)
+        maybe<index_t> insert(const Tag& key, const Value& value)
         {
-            ntl::maybe<index_t> index = lookup(h(key), key);
+            maybe<index_t> index = lookup(h(key), key);
 
             if (!index.valid()) {
                 return index;
             }
 
             if (valid[index.value()] && !insert_overrides)
-                    return ntl::maybe<index_t>();
+                    return maybe<index_t>();
 
             tags[index.value()] = key;
             values[index.value()] = value;
@@ -68,7 +68,7 @@ namespace ntl {
 
         bool erase(const Tag& k)
         {
-            ntl::maybe<index_t> index = lookup(h(k), k);
+            maybe<index_t> index = lookup(h(k), k);
 
             if (!index.valid() || !valid[index.value()] || tags[index.value()] != k) {
                 return false;
@@ -99,21 +99,21 @@ namespace ntl {
             return true;
         }
 
-        ntl::maybe<Value> find(const Tag& k, index_t& out_index) const
+        maybe<Value> find(const Tag& k, index_t& out_index) const
         {
 #pragma HLS inline
-            ntl::maybe<index_t> index = lookup(h(k), k);
+            maybe<index_t> index = lookup(h(k), k);
 
             if (!index.valid() || !valid[index.value()] || tags[index.value()] != k) {
-                return ntl::maybe<Value>();
+                return maybe<Value>();
             }
 
             Value value = values[index.value()];
             out_index = index.value();
-            return ntl::maybe<Value>(value);
+            return maybe<Value>(value);
         }
 
-        ntl::maybe<Value> find(const Tag& k) const
+        maybe<Value> find(const Tag& k) const
         {
 #pragma HLS inline
             index_t index;
@@ -141,14 +141,14 @@ namespace ntl {
     private:
         index_t h(const Tag& tag) const { return boost::hash<Tag>()(tag) % Size; }
 
-        ntl::maybe<index_t> lookup(index_t hash, const Tag& tag) const {
+        maybe<index_t> lookup(index_t hash, const Tag& tag) const {
             for (int i = 0; i < max_hops; ++i) {
                 hash = (hash + 1) % Size;
                 if (!valid[hash] || tags[hash] == tag)
-                    return ntl::maybe<index_t>(hash);
+                    return maybe<index_t>(hash);
             }
 
-            return ntl::maybe<index_t>();
+            return maybe<index_t>();
         }
 
         Tag tags[Size];

@@ -1,23 +1,23 @@
 #include "parser.hpp"
 #include "firewall.hpp"
-#include "ntl/macros.hpp"
+#include "ntl-legacy/macros.hpp"
 #include <pcap/pcap.h>
 #include <gtest/gtest.h>
 
 struct packet_handler_context {
-    hls::stream<ntl::raw_axi_data>& stream;
+    hls::stream<ntl_legacy::raw_axi_data>& stream;
     int count;
     int range_start;
     int range_end;
 
-    explicit packet_handler_context(hls::stream<ntl::raw_axi_data>& stream) :
+    explicit packet_handler_context(hls::stream<ntl_legacy::raw_axi_data>& stream) :
         stream(stream), count(0) {}
 };
 
 void packet_handler(u_char *user, const struct pcap_pkthdr *h, const u_char *bytes)
 {
     packet_handler_context *context = reinterpret_cast<packet_handler_context*>(user);
-    hls::stream<ntl::raw_axi_data>& stream = context->stream;
+    hls::stream<ntl_legacy::raw_axi_data>& stream = context->stream;
     const int b = 32;
 
     if (h->caplen != h->len)
@@ -27,11 +27,11 @@ void packet_handler(u_char *user, const struct pcap_pkthdr *h, const u_char *byt
         goto end;
 
     for (unsigned word = 0; word < ALIGN(h->len, b); word += b) {
-        ntl::axi_data input(0, 0xffffffff, false);
+        ntl_legacy::axi_data input(0, 0xffffffff, false);
         for (unsigned byte = 0; byte < b && word + byte < h->len; ++byte)
             input.data(input.data.width - 1 - 8 * byte, input.data.width - 8 - 8 * byte) = bytes[word + byte];
         if ((word + b) >= h->len) {
-            input.keep = ntl::axi_data::keep_bytes(h->len - word - b);
+            input.keep = ntl_legacy::axi_data::keep_bytes(h->len - word - b);
             input.last = true;
         }
 
@@ -42,7 +42,7 @@ end:
 }
 
 int read_pcap(
-    const std::string& filename, hls::stream<ntl::raw_axi_data>& stream,
+    const std::string& filename, hls::stream<ntl_legacy::raw_axi_data>& stream,
     int range_start, int range_end)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -66,7 +66,7 @@ int read_pcap(
     return context.count;
 }
 
-int write_pcap(FILE* file, hls::stream<ntl::raw_axi_data>& stream, bool_stream& classify_out)
+int write_pcap(FILE* file, hls::stream<ntl_legacy::raw_axi_data>& stream, bool_stream& classify_out)
 {
     int ret;
     int count = 0;
@@ -88,7 +88,7 @@ int write_pcap(FILE* file, hls::stream<ntl::raw_axi_data>& stream, bool_stream& 
     h.len = 0;
 
     while (!stream.empty()) {
-        ntl::axi_data w = stream.read();
+        ntl_legacy::axi_data w = stream.read();
 
         for (int byte = 0; byte < w.data.width / 8; ++byte)
             buffer[h.len + byte] = w.data(w.data.width - 1 - byte * 8,
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    hls::stream<ntl::raw_axi_data> in_fifo("in_fifo"), out_fifo("out_fifo");
+    hls::stream<ntl_legacy::raw_axi_data> in_fifo("in_fifo"), out_fifo("out_fifo");
     bool_stream classify_out("classify_out");
     gateway_registers regs;
     regs.cmd.addr = FIREWALL_ADD; 

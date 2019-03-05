@@ -25,14 +25,14 @@
 
 #pragma once
 
-#include "ntl/hash.hpp"
+#include "ntl-legacy/hash.hpp"
 
 #include "firewall.hpp"
 
 #include <hls_stream.h>
 #include <ap_int.h>
 
-#include "ntl/macros.hpp"
+#include "ntl-legacy/macros.hpp"
 
 #undef CACHE_ENABLE_DEBUG_COMMANDS
 
@@ -43,12 +43,12 @@ static const int Log_Size = 10;
 
 typedef ap_uint<Log_Size> index_t;
 
-typedef ntl::hash<tag_type, mapped_type, Size, 1, false> hash_table_t;
+typedef ntl_legacy::hash<tag_type, mapped_type, Size, 1, false> hash_table_t;
 typedef typename hash_table_t::value_type value_type;
 
 typedef hls::stream<value_type> value_stream;
 typedef hls::stream<tag_type> tag_stream;
-typedef hls::stream<ntl::maybe<std::pair<uint32_t, mapped_type> > > lookup_result_stream;
+typedef hls::stream<ntl_legacy::maybe<std::pair<uint32_t, mapped_type> > > lookup_result_stream;
 
 enum gateway_command_enum {
     HASH_INSERT,
@@ -57,7 +57,7 @@ enum gateway_command_enum {
     HASH_WRITE,
 };
 
-typedef ntl::maybe<value_type> maybe_value_t;
+typedef ntl_legacy::maybe<value_type> maybe_value_t;
 
 struct gateway_command
 {
@@ -84,12 +84,12 @@ void hash_table(tag_stream& lookups, lookup_result_stream& results,
         case HASH_ERASE: {
             tag_type tag = cmd.value.value().first;
             bool result = _table.erase(tag);
-            resp.second = ntl::make_maybe(result, cmd.value.value());
+            resp.second = ntl_legacy::make_maybe(result, cmd.value.value());
             break;
         }
         case HASH_INSERT: {
             value_type value = cmd.value.value();
-            ntl::maybe<uint64_t> result = _table.insert(value.first, value.second);
+            ntl_legacy::maybe<uint64_t> result = _table.insert(value.first, value.second);
             /* Return zero for failure, 1 + index otherwise */
             resp.first = result ? result.value() + 1 : 0;
             break;
@@ -106,7 +106,7 @@ void hash_table(tag_stream& lookups, lookup_result_stream& results,
             bool valid = _table.get_valid(cmd.index);
             tag_type tag = _table.get_tag(cmd.index);
             mapped_type value = _table.get_value(cmd.index);
-            std::get<1>(resp) = ntl::make_maybe(valid, std::make_pair(tag, value));
+            std::get<1>(resp) = ntl_legacy::make_maybe(valid, std::make_pair(tag, value));
             break;
         }
 #endif
@@ -118,9 +118,9 @@ void hash_table(tag_stream& lookups, lookup_result_stream& results,
     if (!lookups.empty()) {
         tag_type tag = lookups.read();
         size_t index;
-        ntl::maybe<ap_uint<1> > result = _table.find(tag, index);
-        ntl::maybe<std::pair<uint32_t, mapped_type> > returned_results =
-            ntl::make_maybe(result.valid(),
+        ntl_legacy::maybe<ap_uint<1> > result = _table.find(tag, index);
+        ntl_legacy::maybe<std::pair<uint32_t, mapped_type> > returned_results =
+            ntl_legacy::make_maybe(result.valid(),
             std::make_pair(result.valid() ? uint32_t(index + 1) : 0,
                            result.value()));
         results.write(returned_results);
