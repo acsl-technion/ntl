@@ -9,10 +9,17 @@ Directory structure
 
   * [`ntl/`](ntl/) contains the class library itself.
   * [`examples/udp-firewall/`](examples/udp-firewall/) contains an example UDP firewall application.
-  * [`evaluation/hls-legacy/`](evaluation/hls-legacy/) and
-    [`evaluation/p4/`](evaluation/p4) implement the same application
-    without ntl, and using P4/SDNet respectively, in order to compare with the
-    above example.
+  * [`evaluation/`] contains extra code and scripts for evaluating the UDP
+    firewall example on a Mellanox Innova Flex SmartNIC and comparing against
+    alternative implementations:
+
+    * [`hls-legacy/`](evaluation/hls-legacy/) and
+      [`p4/`](evaluation/p4/) implement the same application
+      without ntl, and using P4/SDNet respectively, in order to compare with the
+      ntl example.
+    * [`scripts/`](evaluation/scripts/), [`verilog/`](evaluation/verilog/),
+      and [`xci/`](evaluation/xci/) provide necessary code to build a bitstream for the
+      Innova.
 
 Dependencies
 ---
