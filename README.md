@@ -9,7 +9,7 @@ Directory structure
 
   * [`ntl/`](ntl/) contains the class library itself.
   * [`examples/udp-firewall/`](examples/udp-firewall/) contains an example UDP firewall application.
-  * [`evaluation/`] contains extra code and scripts for evaluating the UDP
+  * [`evaluation/`](evaluation/) contains extra code and scripts for evaluating the UDP
     firewall example on a Mellanox Innova Flex SmartNIC and comparing against
     alternative implementations:
 
