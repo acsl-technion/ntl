@@ -10,7 +10,8 @@ add_custom_command(OUTPUT firewall/XilinxSwitch/XilinxSwitch.v
 add_custom_target(firewall-p4
     DEPENDS firewall/XilinxSwitch/XilinxSwitch.v
     WORKING_DIRECTORY firewall/XilinxSwitch
-    COMMAND sed -e 's/xcvu095-ffva2104-2-e/xcku060-ffva1156-2-i/' --in-place XilinxSwitch_vivado_packager.tcl && 
+    COMMAND sed -e 's/xcvu095-ffva2104-2-e/xcku060-ffva1156-2-i/' 
+                -e 's/xcvu9p-flgc2104-2-e/xcku060-ffva1156-2-i/' --in-place XilinxSwitch_vivado_packager.tcl && 
             rm -rf XilinxSwitch_vivado && 
             ${XILINX_VIVADO}/vivado -mode batch -source XilinxSwitch_vivado_packager.tcl)
 
