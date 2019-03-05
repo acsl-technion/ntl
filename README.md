@@ -30,3 +30,6 @@ evaluation P4 application has been tested with Xilinx SDNet 2018.2.
 The C simulation test of the UDP firewall example requires
 [googletest](https://github.com/google/googletest) and
 [libpcap](https://www.tcpdump.org/).
+
+Building a bitstream for the Innova card requires downloading the SDK from
+Mellanox. We have used version 2768 of the SDK.

@@ -24,7 +24,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-tarball=$(readlink -f ${1:-newton_ku060_2_40g_v640.tar})
+tarball=$(readlink -f ${1:-newton_ku060_40g_v2768.tar})
 
 if [ "$#" -lt 1 ] ; then
   echo "Missing argument: tarball"
