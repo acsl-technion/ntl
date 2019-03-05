@@ -10,7 +10,7 @@ find_package(GTest REQUIRED)
 
 set (CMAKE_CXX_STANDARD 11)
 add_executable(csim firewall.cpp main.cpp)
-target_include_directories(csim PRIVATE ${XILINX_VIVADO}/../include ${GTEST_INCLUDE_DIRS})
+target_include_directories(csim PRIVATE ${XILINX_VIVADO}/../include ${GTEST_INCLUDE_DIRS} ../..)
 target_link_libraries(csim ${GTEST_LIBRARIES} pcap Threads::Threads)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
