@@ -1,22 +1,6 @@
-cmake_minimum_required(VERSION 3.2)
+add_executable(firewall firewall.cpp main.cpp)
 
-find_path(XILINX_VIVADO
-    "vivado"
-    PATHS /opt/Xilinx/Vivado/2018.2/bin
-    DOC "Xilinx Vivado path")
-
-set(GTEST_ROOT "$ENV{GTEST_ROOT}" CACHE PATH "Root directory of gtest installation")
-find_package(GTest REQUIRED)
-
-set (CMAKE_CXX_STANDARD 11)
-add_executable(csim firewall.cpp main.cpp)
-target_include_directories(csim PRIVATE ${XILINX_VIVADO}/../include ${GTEST_INCLUDE_DIRS} ../..)
-target_link_libraries(csim ${GTEST_LIBRARIES} pcap Threads::Threads)
-
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-
-add_custom_target(hls ALL
+add_custom_target(hls
     COMMAND env GTEST_ROOT=${GTEST_ROOT} ${XILINX_VIVADO}/vivado_hls
             ${CMAKE_SOURCE_DIR}/firewall.tcl
     DEPENDS firewall.tcl csim)
