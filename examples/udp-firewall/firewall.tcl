@@ -1,13 +1,16 @@
 package require Tcl 8.5
 
+set basename [info script]
+set basedir [file join [pwd] {*}[lrange [file split $basename] 0 end-1]]
+
 proc create_project {name top dir files tb_files} {
     open_project -reset "$name"
 
-    global env
+    global env basedir
     set_top $top
     set GTEST_ROOT $::env(GTEST_ROOT)
     set cflags "-std=gnu++0x -Wno-gnu-designator \
-                -I$GTEST_ROOT/include"
+                -I$GTEST_ROOT/include -I$basedir/../.."
 
     set ldflags "-lpcap -L$GTEST_ROOT -lgtest"
 
@@ -35,4 +38,4 @@ proc create_project {name top dir files tb_files} {
     export_design -format ip_catalog
 }
 
-create_project firewall {firewall_top} . {firewall.cpp} {main.cpp}
+create_project firewall {firewall_top} $basedir {firewall.cpp} {main.cpp}

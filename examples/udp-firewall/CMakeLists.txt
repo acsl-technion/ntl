@@ -15,3 +15,8 @@ target_link_libraries(csim ${GTEST_LIBRARIES} pcap Threads::Threads)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
+
+add_custom_target(hls ALL
+    COMMAND env GTEST_ROOT=${GTEST_ROOT} ${XILINX_VIVADO}/vivado_hls
+            ${CMAKE_SOURCE_DIR}/firewall.tcl
+    DEPENDS firewall.tcl csim)
