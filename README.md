@@ -27,6 +27,8 @@ Dependencies
 ntl has been tested with Xilinx Vivado HLS, and Xilinx Vivado 2018.2, and the
 evaluation P4 application has been tested with Xilinx SDNet 2018.2.
 
+ntl relies on [Boost](https://www.boost.org/) libraries, and was tested with version 1.54.0.
+
 The C simulation test of the UDP firewall example requires
 [googletest](https://github.com/google/googletest) and
 [libpcap](https://www.tcpdump.org/).
