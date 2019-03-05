@@ -1,4 +1,4 @@
-ntl &mdash; Networking Template Library
+ntl — Networking Template Library
 ===
 
 ntl is a C++ template library for generating efficient FPGA networking
