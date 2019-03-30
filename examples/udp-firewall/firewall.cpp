@@ -45,7 +45,7 @@ int firewall::rpc(int addr, gateway_data& data)
     case FIREWALL_DEL:
         return hash.gateway_delete_entry(data.tag, &data.status);
     default:
-        return GW_FAIL;
+        return ntl::GW_FAIL;
     }
 }
 

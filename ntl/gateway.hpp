@@ -34,13 +34,13 @@
     DO_PRAGMA_SYN(HLS interface s_axilite port=gateway.data offset=offset_data) \
     DO_PRAGMA_SYN(HLS interface s_axilite port=gateway.done offset=offset_done)
 
-enum {
-    GW_FAIL = (-1),
-    GW_DONE = 0,
-    GW_BUSY = 1,
-};
-
 namespace ntl {
+    enum {
+        GW_FAIL = (-1),
+        GW_DONE = 0,
+        GW_BUSY = 1,
+    };
+
     template <typename T>
     struct gateway_registers {
         gateway_registers() : cmd({0, 0}), data(), done(0) {}
