@@ -35,7 +35,7 @@
 #include "macros.hpp"
 #include "constexpr.hpp"
 
-#undef CACHE_ENABLE_DEBUG_COMMANDS
+// #undef CACHE_ENABLE_DEBUG_COMMANDS
 
 namespace ntl {
     template <typename Tag, typename Value, unsigned Size, int max_hops = Size, bool insert_overrides = true>

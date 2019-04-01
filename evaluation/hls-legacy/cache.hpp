@@ -34,7 +34,7 @@
 
 #include "ntl-legacy/macros.hpp"
 
-#undef CACHE_ENABLE_DEBUG_COMMANDS
+// #undef CACHE_ENABLE_DEBUG_COMMANDS
 
 typedef hash_tag tag_type;
 typedef ap_uint<1> mapped_type;
