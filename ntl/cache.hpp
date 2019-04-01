@@ -27,7 +27,7 @@
 
 #include <boost/functional/hash.hpp>
 
-#include <hls_stream.h>
+#include "stream.hpp"
 #include <ap_int.h>
 
 #include "gateway.hpp"
