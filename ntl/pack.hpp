@@ -82,13 +82,13 @@ namespace ntl {
         pack_stream() {}
         pack_stream(const char *name) : raw_s(name) {}
 
-        bool full() const
+        bool full()
         {
 #pragma HLS inline
             return raw_s.full();
         }
 
-        bool empty() const
+        bool empty()
         {
 #pragma HLS inline
             return raw_s.empty();
