@@ -46,7 +46,7 @@ namespace ntl {
         int gateway_set(uint32_t index)
         {
 #pragma HLS inline
-#pragma HLS data_pack variable=updates
+#pragma HLS data_pack variable=updates._stream
             if (!valid_index(index))
                 return GW_FAIL;
 
@@ -73,7 +73,7 @@ namespace ntl {
         bool update()
         {
 #pragma HLS inline
-#pragma HLS data_pack variable=updates
+#pragma HLS data_pack variable=updates._stream
             if (updates.empty())
                 return false;
  
