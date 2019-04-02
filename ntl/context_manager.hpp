@@ -46,7 +46,6 @@ namespace ntl {
         int gateway_set(uint32_t index)
         {
 #pragma HLS inline
-#pragma HLS data_pack variable=updates._stream
             if (!valid_index(index))
                 return GW_FAIL;
 
@@ -73,7 +72,6 @@ namespace ntl {
         bool update()
         {
 #pragma HLS inline
-#pragma HLS data_pack variable=updates._stream
             if (updates.empty())
                 return false;
  
@@ -137,7 +135,6 @@ namespace ntl {
         int gateway_rmw(uint32_t index, F f)
         {
 #pragma HLS inline
-#pragma HLS data_pack variable=updates
             switch (gateway_state) {
             case IDLE:
                 if (!valid_index(index))
@@ -191,7 +188,6 @@ namespace ntl {
         bool update()
         {
 #pragma HLS inline
-#pragma HLS data_pack variable=updates
             std::tuple<index_t, context_t> update;
             if (updates.read_nb(update)) {
                 index_t index;
@@ -214,7 +210,6 @@ namespace ntl {
         int gateway_set(uint32_t index)
         {
 #pragma HLS inline
-#pragma HLS data_pack variable=updates
             if (!valid_index(index))
                 return GW_FAIL;
 
