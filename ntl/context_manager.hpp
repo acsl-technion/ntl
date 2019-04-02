@@ -74,17 +74,15 @@ namespace ntl {
         {
 #pragma HLS inline
 #pragma HLS data_pack variable=updates
-            std::tuple<index_t, context_t> update;
-            if (updates.read_nb(update)) {
-                index_t index;
-                context_t context;
+            if (updates.empty())
+                return false;
+ 
+            index_t index;
+            context_t context;
 
-                std::tie(index, context) = update;
-                contexts[index] = context;
-                return true;
-            }
-
-            return false;
+            std::tie(index, context) = updates.read();
+            contexts[index] = context;
+            return true;
         }
 
         context_t gateway_context;
