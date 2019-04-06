@@ -36,26 +36,29 @@ namespace ntl {
     };
 
     struct axi_data : public boost::equality_comparable<axi_data> {
-        ap_uint<256> data;
-        ap_uint<32> keep;
+        static const int data_bits = 256;
+        static const int data_bytes = data_bits / 8;
+
+        ap_uint<data_bits> data;
+        ap_uint<data_bytes> keep;
         ap_uint<1> last;
 
         axi_data() {}
-        axi_data(const ap_uint<256>& data, const ap_uint<32>& keep, bool last) :
+        axi_data(const ap_uint<data_bits>& data, const ap_uint<data_bytes>& keep, bool last) :
             data(data), keep(keep), last(last) {}
         axi_data(const axi_data&) = default;
         axi_data(const raw_axi_data& o) :
             data(o.data), keep(o.keep), last(o.last) {}
 
-        static ap_uint<32> keep_bytes(const ap_uint<6>& valid_bytes)
+        static ap_uint<data_bytes> keep_bytes(const ap_uint<6>& valid_bytes)
         {
-            return 0xffffffff ^ ((1 << (32 - valid_bytes)) - 1);
+            return 0xffffffff ^ ((1 << (data_bytes - valid_bytes)) - 1);
         }
 
         void set_data(const char *d, const ap_uint<6>& valid_bytes)
         {
             keep = keep_bytes(valid_bytes);
-            for (int byte = 0; byte < 32; ++byte) {
+            for (int byte = 0; byte < data_bytes; ++byte) {
     #pragma HLS unroll
                 const char data_word = (byte < valid_bytes) ? d[byte] : 0;
                 data(data.width - 1 - 8 * byte, data.width - 8 - 8 * byte) = data_word;
@@ -64,7 +67,7 @@ namespace ntl {
 
         int get_data(char *d) const
         {
-            for (int byte = 0; byte < 32; ++byte) {
+            for (int byte = 0; byte < data_bytes; ++byte) {
     #pragma HLS unroll
                 const uint8_t cur = data(data.width - 1 - 8 * byte, data.width - 8 - 8 * byte);
                 if (keep[31 - byte])
@@ -73,16 +76,16 @@ namespace ntl {
                     return byte;
             }
 
-            return 32;
+            return data_bytes;
         }
 
         bool operator ==(const axi_data& other) const { return data == other.data && keep == other.keep && last == other.last; }
 
-        static const int width = 256 + 32 + 1;
+        static const int width = data_bits + data_bytes + 1;
 
         axi_data(const ap_uint<width> d) :
-            data(d(288, 33)),
-            keep(d(32, 1)),
+            data(d(255 + data_bytes + 1, data_bytes + 1)),
+            keep(d(data_bytes, 1)),
             last(d(0, 0))
         {}
 
