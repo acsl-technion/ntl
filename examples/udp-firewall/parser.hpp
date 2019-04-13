@@ -3,7 +3,6 @@
 #include "ntl/stream.hpp"
 #include "ntl/dup.hpp"
 #include "ntl/zip.hpp"
-#include "ntl/consume.hpp"
 #include "ntl/fold.hpp"
 #include "ntl/link.hpp"
 #include "ntl/enumerate.hpp"

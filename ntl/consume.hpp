@@ -1,20 +1,27 @@
 #pragma once
 
-#include "stream.hpp"
-
 namespace ntl {
 
-    template <typename T>
-    class consume
+    class consume_stream
     {
     public:
-        void step(stream<T>& in)
+        template <typename Stream>
+        void step(Stream& in, bool enabled = true)
         {
 #pragma HLS pipeline
+            if (!enabled)
+                return;
+
             if (in.empty())
                 return;
                 
             in.read();
         }
     };
+
+    template <typename Stream>
+    void consume(Stream& in, bool enabled = true)
+    {
+        consume_stream().step(in, enabled);
+    }
 }
