@@ -13,8 +13,7 @@ namespace ntl {
     };
 
     struct ap_fifo_tag {};
-    struct axi_stream_input_tag {};
-    struct axi_stream_output_tag {};
+    struct axi_stream_tag {};
 
     template <typename T, typename Kind = ap_fifo_tag> class stream;
 
@@ -56,7 +55,7 @@ namespace ntl {
     };
 
     template <typename T>
-    class stream<T, axi_stream_input_tag>
+    class stream<T, axi_stream_tag>
     {
     public:
         stream() = default;
@@ -73,16 +72,6 @@ namespace ntl {
 #pragma HLS inline
             return _stream.empty();
         }
-
-        hls::stream<T> _stream;
-    };
-
-    template <typename T>
-    class stream<T, axi_stream_output_tag>
-    {
-    public:
-        stream() = default;
-        explicit stream(const char *name) : _stream(name) {}
 
         template <typename U>
         void write(const U& u)

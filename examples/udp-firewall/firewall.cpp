@@ -49,8 +49,8 @@ int firewall::rpc(int addr, gateway_data& data)
     }
 }
 
-void firewall_top(ntl::stream<ntl::raw_axi_data, ntl::axi_stream_input_tag>& in,
-                  ntl::stream<ntl::raw_axi_data, ntl::axi_stream_output_tag>& data_out,
+void firewall_top(ntl::stream<ntl::raw_axi_data, ntl::axi_stream_tag>& in,
+                  ntl::stream<ntl::raw_axi_data, ntl::axi_stream_tag>& data_out,
                   bool_stream& classify_out, gateway_registers& g)
 {
 #pragma HLS dataflow
