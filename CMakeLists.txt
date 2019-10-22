@@ -44,3 +44,24 @@ if(BUILD_EVALUATION)
     add_dependencies(p4 firewall-p4)
 endif()
 
+enable_testing()
+# add a check target to build all tests and run them
+# see https://cmake.org/Wiki/CMakeEmulateMakeCheck
+add_custom_target(check COMMAND env PATH=${TCPDUMP_PATH}:$$PATH ${CMAKE_CTEST_COMMAND})
+
+function(add_gtest name)
+    cmake_parse_arguments(GTEST
+        ""
+        ""
+        "SOURCES"
+        ${ARGN}
+    )
+
+    add_executable(${name} EXCLUDE_FROM_ALL ${GTEST_SOURCES})
+    add_dependencies(check ${name})
+    add_test(${name} ${name})
+    #target_compile_features(${name} PRIVATE cxx_lambdas)
+    target_link_libraries(${name} ${GTEST_LIBRARIES}) #  ${UUID_LIBRARIES} Threads::Threads)
+endfunction(add_gtest)
+
+add_subdirectory(tests)
