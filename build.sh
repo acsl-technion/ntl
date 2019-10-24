@@ -6,3 +6,5 @@ mkdir -p $dir/build
 cd $dir/build
 cmake ..
 make
+
+make check
