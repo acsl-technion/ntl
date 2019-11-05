@@ -10,12 +10,12 @@ namespace ntl {
     class enumerate
     {
     public:
-        typedef stream<T> in_t;
         typedef std::tuple<Counter, T> tuple_t;
         typedef stream<tuple_t> out_t;
         out_t out;
 
-        void step(in_t& in)
+        template <typename InputStream>
+        void step(InputStream& in)
         {
     #pragma HLS inline
             dup.step(in);
