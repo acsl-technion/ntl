@@ -11,7 +11,8 @@ namespace ntl {
     public:
         std::array<stream<T>, n> _streams;
 
-        void step(stream<T>& in)
+        template <typename InputStream>
+        void step(InputStream& in)
         {
 #pragma HLS pipeline
             if (in.empty())
