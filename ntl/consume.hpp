@@ -22,6 +22,7 @@ namespace ntl {
     template <typename Stream>
     void consume(Stream& in, bool enabled = true)
     {
+#pragma HLS inline region
         consume_stream().step(in, enabled);
     }
 }
