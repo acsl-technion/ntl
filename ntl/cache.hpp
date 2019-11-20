@@ -148,7 +148,7 @@ namespace ntl {
         bool get_valid(index_t index) const { return valid[index % Size]; }
 #endif
 
-    private:
+    protected:
         index_t h(const Tag& tag) const { return boost::hash<Tag>()(tag) % Size; }
 
         maybe<index_t> lookup(index_t hash, const Tag& tag) const {
