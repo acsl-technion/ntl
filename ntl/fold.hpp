@@ -1,6 +1,7 @@
 #pragma once
 
 #include "last.hpp"
+#include <ntl/stream.hpp>
 
 namespace ntl {
 

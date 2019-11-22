@@ -18,12 +18,12 @@ namespace ntl {
         {
     #pragma HLS pipeline
             base::step(in, [](Counter cnt, const T& t) {
-                return Counter(++cnt);
+                return ++cnt;
             });
         }
     };
 
-    template <int width, int limit = ~0>
+    template <int width, int limit = (1 << width) - 1>
     class maxed_int : public ap_uint<width>, public boost::incrementable<maxed_int<width>>
     {
     public:

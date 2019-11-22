@@ -30,7 +30,7 @@ namespace ntl {
     };
 
     template <typename T>
-    class enum_first : public enumerate<T, maxed_int<2>>
+    class enum_first : public enumerate<T, maxed_int<2, 2>>
     {
     };
 }
