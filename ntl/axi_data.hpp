@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <ap_int.h>
 #include <boost/operators.hpp>
 
