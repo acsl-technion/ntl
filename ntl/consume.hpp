@@ -8,7 +8,7 @@ namespace ntl {
         template <typename Stream>
         void step(Stream& in, bool enabled = true)
         {
-#pragma HLS pipeline
+#pragma HLS pipeline enable_flush
             if (!enabled)
                 return;
 

@@ -13,7 +13,7 @@ namespace ntl {
 
         void step(stream<Args>&... in)
         {
-#pragma HLS pipeline
+#pragma HLS pipeline enable_flush
             if (out.full())
                 return;
 
@@ -39,7 +39,7 @@ namespace ntl {
         template <typename Func>
         void step(Func&& f, stream<Args>&... in)
         {
-#pragma HLS pipeline
+#pragma HLS pipeline enable_flush
             if (out.full())
                 return;
 

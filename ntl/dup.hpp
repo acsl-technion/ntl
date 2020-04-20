@@ -14,7 +14,7 @@ namespace ntl {
         template <typename InputStream>
         void step(InputStream& in)
         {
-#pragma HLS pipeline
+#pragma HLS pipeline enable_flush
             if (in.empty())
                 return;
 

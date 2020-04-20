@@ -5,7 +5,7 @@ namespace ntl {
     template <typename InputStream, typename OutputStream, typename Func>
     void map(InputStream& in, OutputStream& out, Func&& f)
     {
-#pragma HLS pipeline
+#pragma HLS pipeline enable_flush
         if (in.empty() || out.full())
             return;
 

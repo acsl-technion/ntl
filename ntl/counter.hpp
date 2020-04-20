@@ -16,7 +16,7 @@ namespace ntl {
 
         void step(in_t& in)
         {
-    #pragma HLS pipeline
+#pragma HLS pipeline enable_flush
             base::step(in, [](Counter cnt, const T& t) {
                 return ++cnt;
             });
